@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ScrollStory
 
-## Getting Started
+Scroll-driven product landing page for a fictional gaming mouse. 240 video frames rendered on canvas, synchronized to scroll position. Text sections fade in and out as you scroll. Cursor trail, specs comparison, testimonials, and CTA.
 
-First, run the development server:
+**Stack:** `Next.js 14 · TypeScript · Framer Motion · Canvas API · Tailwind CSS`
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**Live:** https://scrollstory-bitcoineo.vercel.app
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Why I built this
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+I wanted to understand how Apple-style scroll animations work: pre-rendered frames played back through a canvas element driven by scroll progress, with text overlays timed to match. A pure design and animation exercise.
 
-## Learn More
+## Features
 
-To learn more about Next.js, take a look at the following resources:
+- **Frame-by-frame canvas animation** 240 JPEG frames preloaded and drawn to canvas as the user scrolls
+- **Scroll-synced text** Sections fade in and out at specific scroll progress values via Framer Motion
+- **Cursor trail** Custom cursor effect following mouse movement
+- **Loading screen** Preloads all frames before revealing the page
+- **Specs comparison** Interactive table comparing product tiers
+- **Testimonials** Customer review section
+- **Sticky nav** Navigation that persists across scroll sections
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Run Locally
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    pnpm install
+    pnpm dev
 
-## Deploy on Vercel
+Open http://localhost:3000
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## GitHub Topics
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`nextjs` `typescript` `framer-motion` `canvas` `scroll-animation` `landing-page` `design` `tailwind`
