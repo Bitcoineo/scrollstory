@@ -151,7 +151,15 @@ export default function MouseScroll() {
     layout.width = targetWidth;
     layout.height = targetHeight;
 
-    if (canvasAspect > imgAspect) {
+    const isMobile = window.innerWidth < 768;
+
+    if (isMobile) {
+      // Cover fit: fill viewport height, crop sides (mouse is centered)
+      layout.drawHeight = canvas.height;
+      layout.drawWidth = layout.drawHeight * imgAspect;
+      layout.offsetX = (canvas.width - layout.drawWidth) / 2;
+      layout.offsetY = 0;
+    } else if (canvasAspect > imgAspect) {
       layout.drawHeight = canvas.height;
       layout.drawWidth = layout.drawHeight * imgAspect;
       layout.offsetX = (canvas.width - layout.drawWidth) / 2;
