@@ -19,6 +19,18 @@ export default function MouseScroll() {
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+
+  // Cached layout values — only recalculated on resize
+  const layoutRef = useRef({
+    dpr: 1,
+    width: 0,
+    height: 0,
+    drawWidth: 0,
+    drawHeight: 0,
+    offsetX: 0,
+    offsetY: 0,
+  });
 
   const { scrollYProgress } = useScroll({ target: containerRef });
 
@@ -29,18 +41,68 @@ export default function MouseScroll() {
     [0, FRAME_COUNT - 1, 0]
   );
 
+  // Recalculate cached layout values
+  const updateLayout = useCallback((imgWidth: number, imgHeight: number) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const targetWidth = Math.round(rect.width * dpr);
+    const targetHeight = Math.round(rect.height * dpr);
+
+    if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+    }
+
+    const imgAspect = imgWidth / imgHeight;
+    const canvasAspect = rect.width / rect.height;
+
+    const layout = layoutRef.current;
+    layout.dpr = dpr;
+    layout.width = targetWidth;
+    layout.height = targetHeight;
+
+    if (canvasAspect > imgAspect) {
+      layout.drawHeight = canvas.height;
+      layout.drawWidth = layout.drawHeight * imgAspect;
+      layout.offsetX = (canvas.width - layout.drawWidth) / 2;
+      layout.offsetY = 0;
+    } else {
+      layout.drawWidth = canvas.width;
+      layout.drawHeight = layout.drawWidth / imgAspect;
+      layout.offsetX = 0;
+      layout.offsetY = (canvas.height - layout.drawHeight) / 2;
+    }
+
+    // Reset fillStyle after canvas resize (resize clears canvas state)
+    const ctx = ctxRef.current;
+    if (ctx) {
+      ctx.fillStyle = BG_COLOR;
+    }
+  }, []);
+
   // Preload all frames
   useEffect(() => {
+    let cancelled = false;
     const imageArray: HTMLImageElement[] = new Array(FRAME_COUNT);
     let loadedCount = 0;
+    let lastReportedProgress = 0;
 
     const loadImage = (index: number): Promise<void> => {
       return new Promise((resolve, reject) => {
         const img = new Image();
         img.onload = () => {
+          if (cancelled) return resolve();
           imageArray[index] = img;
           loadedCount++;
-          setLoadProgress(Math.round((loadedCount / FRAME_COUNT) * 100));
+          // Throttle progress updates: report every ~5% instead of every frame
+          const progress = Math.round((loadedCount / FRAME_COUNT) * 100);
+          if (progress >= lastReportedProgress + 5 || loadedCount === FRAME_COUNT) {
+            lastReportedProgress = progress;
+            setLoadProgress(progress);
+          }
           resolve();
         };
         img.onerror = reject;
@@ -50,63 +112,57 @@ export default function MouseScroll() {
 
     Promise.all(
       Array.from({ length: FRAME_COUNT }, (_, i) => loadImage(i))
-    ).then(() => {
-      setImages(imageArray);
-      setIsLoaded(true);
-    });
+    )
+      .then(() => {
+        if (cancelled) return;
+        setImages(imageArray);
+        setIsLoaded(true);
+      })
+      .catch((err) => {
+        console.error("Failed to load frames:", err);
+        // Still show what we have
+        if (!cancelled) {
+          setImages(imageArray);
+          setIsLoaded(true);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  // Render a frame to the canvas
+  // Initialize canvas context once
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    ctxRef.current = canvas.getContext("2d");
+    if (ctxRef.current) {
+      ctxRef.current.fillStyle = BG_COLOR;
+    }
+  }, []);
+
+  // Render a frame to the canvas (hot path — minimal work)
   const renderFrame = useCallback(
     (index: number) => {
-      const canvas = canvasRef.current;
-      if (!canvas || !images[index]) return;
+      const ctx = ctxRef.current;
+      if (!ctx || !images[index]) return;
 
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+      const { width, height, drawWidth, drawHeight, offsetX, offsetY } =
+        layoutRef.current;
 
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-
-      const targetWidth = Math.round(rect.width * dpr);
-      const targetHeight = Math.round(rect.height * dpr);
-
-      if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
-        canvas.width = targetWidth;
-        canvas.height = targetHeight;
-      }
-
-      const img = images[index];
-      const imgAspect = img.width / img.height;
-      const canvasAspect = rect.width / rect.height;
-
-      let drawWidth: number;
-      let drawHeight: number;
-      let offsetX: number;
-      let offsetY: number;
-
-      if (canvasAspect > imgAspect) {
-        drawHeight = canvas.height;
-        drawWidth = drawHeight * imgAspect;
-        offsetX = (canvas.width - drawWidth) / 2;
-        offsetY = 0;
-      } else {
-        drawWidth = canvas.width;
-        drawHeight = drawWidth / imgAspect;
-        offsetX = 0;
-        offsetY = (canvas.height - drawHeight) / 2;
-      }
-
-      ctx.fillStyle = BG_COLOR;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(images[index], offsetX, offsetY, drawWidth, drawHeight);
     },
     [images]
   );
 
   // Subscribe to scroll changes and render frames
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || images.length === 0) return;
+
+    // Calculate initial layout using first image dimensions
+    updateLayout(images[0].width, images[0].height);
 
     let rafId: number;
     let lastFrame = -1;
@@ -129,20 +185,29 @@ export default function MouseScroll() {
       unsubscribe();
       cancelAnimationFrame(rafId);
     };
-  }, [isLoaded, frameIndex, renderFrame]);
+  }, [isLoaded, images, frameIndex, renderFrame, updateLayout]);
 
-  // Handle window resize
+  // Handle window resize with rAF throttle
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || images.length === 0) return;
+
+    let resizeRafId: number;
 
     const handleResize = () => {
-      const index = Math.round(frameIndex.get());
-      renderFrame(Math.min(FRAME_COUNT - 1, Math.max(0, index)));
+      cancelAnimationFrame(resizeRafId);
+      resizeRafId = requestAnimationFrame(() => {
+        updateLayout(images[0].width, images[0].height);
+        const index = Math.round(frameIndex.get());
+        renderFrame(Math.min(FRAME_COUNT - 1, Math.max(0, index)));
+      });
     };
 
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [isLoaded, frameIndex, renderFrame]);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(resizeRafId);
+    };
+  }, [isLoaded, images, frameIndex, renderFrame, updateLayout]);
 
   return (
     <>

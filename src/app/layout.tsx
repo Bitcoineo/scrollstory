@@ -24,7 +24,7 @@ export default function RootLayout({
         <link rel="preload" href="/frames/ezgif-frame-001.jpg" as="image" />
       </head>
       <body
-        className={`${inter.variable} font-sans bg-[#080808] text-white antialiased overflow-x-hidden`}
+        className={`${inter.variable} font-sans antialiased overflow-x-hidden`}
       >
         {children}
       </body>

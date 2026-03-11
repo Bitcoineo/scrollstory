@@ -53,7 +53,7 @@ export default function Testimonials() {
               delay: i * 0.15,
             }}
             viewport={{ once: true, margin: "-50px" }}
-            className="relative rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm p-8 flex flex-col justify-between"
+            className="relative rounded-2xl border border-white/5 bg-white/[0.02] p-8 flex flex-col justify-between"
           >
             {/* Glassmorphism highlight */}
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.03] via-transparent to-transparent pointer-events-none" />

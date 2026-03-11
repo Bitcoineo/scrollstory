@@ -2,11 +2,17 @@
 
 import { MotionValue, useTransform, motion } from "framer-motion";
 
+const positionClasses = {
+  left: "items-start text-left pl-8 md:pl-16 lg:pl-24",
+  center: "items-center text-center",
+  right: "items-end text-right pr-8 md:pr-16 lg:pr-24",
+} as const;
+
 interface ScrollTextProps {
   scrollProgress: MotionValue<number>;
   enterAt: number;
   exitAt: number;
-  position: "left" | "center" | "right";
+  position: keyof typeof positionClasses;
   children: React.ReactNode;
 }
 
@@ -32,12 +38,6 @@ export default function ScrollText({
     [enterAt, fadeInEnd, fadeOutStart, exitAt],
     [30, 0, 0, -20]
   );
-
-  const positionClasses = {
-    left: "items-start text-left pl-8 md:pl-16 lg:pl-24",
-    center: "items-center text-center",
-    right: "items-end text-right pr-8 md:pr-16 lg:pr-24",
-  };
 
   return (
     <motion.div
