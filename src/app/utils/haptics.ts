@@ -1,16 +1,18 @@
-const isTouch = () =>
-  typeof window !== "undefined" &&
-  ("ontouchstart" in window || navigator.maxTouchPoints > 0);
+import { WebHaptics } from "web-haptics";
 
-const vibrate = (pattern: number | number[]) => {
-  if (isTouch()) navigator?.vibrate?.(pattern);
-};
+let instance: WebHaptics | null = null;
+
+function getHaptics(): WebHaptics | null {
+  if (typeof window === "undefined") return null;
+  if (!instance) instance = new WebHaptics();
+  return instance;
+}
 
 export const haptics = {
-  light: () => vibrate(10),
-  medium: () => vibrate(25),
-  heavy: () => vibrate(50),
-  milestone: () => vibrate([15, 50, 15]),
-  success: () => vibrate([10, 30, 10, 30, 40]),
-  tick: () => vibrate(5),
+  light: () => getHaptics()?.trigger("light"),
+  medium: () => getHaptics()?.trigger("medium"),
+  heavy: () => getHaptics()?.trigger("heavy"),
+  success: () => getHaptics()?.trigger("success"),
+  milestone: () => getHaptics()?.trigger("success"),
+  tick: () => getHaptics()?.trigger("selection"),
 };
