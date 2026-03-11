@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { haptics } from "../utils/haptics";
 
 const testimonials = [
   {
@@ -28,20 +29,20 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section className="px-6 md:px-16 lg:px-24 py-10 md:py-14" aria-label="Reviews">
+    <section className="px-4 sm:px-6 md:px-16 lg:px-24 py-10 md:py-14" aria-label="Reviews">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         viewport={{ once: true, margin: "-100px" }}
-        className="text-center mb-10"
+        className="text-center mb-8 sm:mb-10"
       >
-        <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-white/90">
+        <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight text-white/90">
           Trusted by Pros.
         </h2>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
         {testimonials.map((t, i) => (
           <motion.div
             key={t.name}
@@ -54,23 +55,19 @@ export default function Testimonials() {
             }}
             viewport={{ once: true, margin: "-50px" }}
           >
-            {/* Outer: Framer entry. Inner: CSS float */}
             <div
-              className="group relative rounded-2xl border border-white/5 bg-white/[0.02] p-8 flex flex-col justify-between animate-float transition-all duration-300 hover:-translate-y-2 hover:border-accent/30"
+              onTouchStart={() => haptics.light()}
+              className="group relative rounded-2xl border border-white/5 bg-white/[0.02] p-5 sm:p-6 md:p-8 flex flex-col justify-between animate-float transition-all duration-300 hover:-translate-y-2 hover:border-accent/30"
               style={{ animationDelay: `${i * 1}s` }}
             >
-              {/* Glassmorphism highlight */}
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.03] via-transparent to-transparent pointer-events-none transition-all duration-300 group-hover:from-accent/[0.05]" />
-
-              {/* Hover neon glow */}
               <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none neon-border" />
 
-              {/* Quote mark */}
-              <span className="text-4xl text-accent/30 font-bold leading-none mb-2 relative transition-all duration-300 group-hover:text-accent/50 group-hover:neon-text-subtle">
+              <span className="text-3xl sm:text-4xl text-accent/30 font-bold leading-none mb-2 relative transition-all duration-300 group-hover:text-accent/50 group-hover:neon-text-subtle">
                 &ldquo;
               </span>
 
-              <p className="text-lg leading-relaxed text-white/50 mb-8 relative">
+              <p className="text-base sm:text-lg leading-relaxed text-white/50 mb-6 sm:mb-8 relative">
                 {t.quote}&rdquo;
               </p>
 
@@ -78,8 +75,8 @@ export default function Testimonials() {
                 <p className="text-sm font-bold text-white/90 tracking-wide transition-all duration-300 group-hover:text-accent">
                   {t.name}
                 </p>
-                <p className="text-sm text-accent mt-1">{t.title}</p>
-                <p className="text-sm text-white/30 mt-0.5">{t.team}</p>
+                <p className="text-xs sm:text-sm text-accent mt-1">{t.title}</p>
+                <p className="text-xs sm:text-sm text-white/30 mt-0.5">{t.team}</p>
               </div>
             </div>
           </motion.div>

@@ -1,5 +1,7 @@
 "use client";
 
+import { haptics } from "../utils/haptics";
+
 const socialLinks = [
   {
     label: "Twitter / X",
@@ -16,14 +18,14 @@ const socialLinks = [
 export default function Footer() {
   return (
     <footer aria-label="Footer">
-      <div className="px-6 md:px-16 lg:px-24 py-10 md:py-14">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+      <div className="px-4 sm:px-6 md:px-16 lg:px-24 py-10 md:py-14">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 text-center md:text-left">
           <p className="text-sm text-white/30">
             A concept website by{" "}
             <span className="text-white/50 font-bold">Bitcoineo</span>
           </p>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4 sm:gap-6">
             {socialLinks.map((link) => (
               <a
                 key={link.label}
@@ -31,10 +33,11 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={link.label}
-                className="text-white/30 hover:text-accent transition-all duration-300 hover:scale-110"
+                onTouchStart={() => haptics.light()}
+                className="text-white/30 hover:text-accent transition-all duration-300 hover:scale-110 p-2"
               >
                 <svg
-                  className="w-5 h-5 transition-all duration-300 hover:drop-shadow-[0_0_6px_rgba(192,160,128,0.6)]"
+                  className="w-5 h-5 transition-all duration-300 hover:drop-shadow-[0_0_6px_rgba(var(--accent-rgb),0.6)]"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                   aria-hidden="true"

@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { useScroll, useTransform } from "framer-motion";
+import { useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import LoadingScreen from "./LoadingScreen";
 import ScrollText from "./ScrollText";
+import { haptics } from "../utils/haptics";
 
 const FRAME_COUNT = 240;
 const BG_COLOR = "#050708";
@@ -72,8 +73,8 @@ const scrollSections: ScrollSection[] = [
 ];
 
 const headingClass: Record<"h1" | "h2", string> = {
-  h1: "text-6xl md:text-8xl font-bold tracking-tighter text-white/90",
-  h2: "text-4xl md:text-6xl font-bold tracking-tight text-white/90",
+  h1: "text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-bold tracking-tighter text-white/90",
+  h2: "text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold tracking-tight text-white/90",
 };
 
 export default function MouseScroll() {
@@ -95,7 +96,32 @@ export default function MouseScroll() {
     offsetY: 0,
   });
 
+  const firedThresholdsRef = useRef(new Set<number>());
+
   const { scrollYProgress } = useScroll({ target: containerRef });
+
+  // Haptic feedback at scroll milestones
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    if (!isLoaded) return;
+    const fired = firedThresholdsRef.current;
+
+    // Tick at 25/50/75%
+    for (const t of [0.25, 0.5, 0.75]) {
+      if (latest >= t && !fired.has(t)) {
+        fired.add(t);
+        haptics.tick();
+      }
+    }
+
+    // Milestone at each section enterAt
+    for (const s of scrollSections) {
+      const key = s.enterAt + 100; // offset to avoid collision with tick thresholds
+      if (latest >= s.enterAt && !fired.has(key)) {
+        fired.add(key);
+        haptics.milestone();
+      }
+    }
+  });
 
   const frameIndex = useTransform(
     scrollYProgress,
@@ -262,13 +288,13 @@ export default function MouseScroll() {
 
           {/* Quality badge — covers watermark */}
           <div
-            className="absolute bottom-4 right-4 md:bottom-6 md:right-6 pointer-events-none z-10 flex items-center gap-3 px-6 py-3 rounded-full border border-white/10 bg-black/60 backdrop-blur-sm"
+            className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 md:bottom-6 md:right-6 pointer-events-none z-10 flex items-center gap-1.5 sm:gap-2 md:gap-3 px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-3 rounded-full border border-white/10 bg-black/60 backdrop-blur-sm"
             aria-hidden="true"
           >
-            <svg className="w-6 h-6 text-accent" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-accent" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M16.403 12.652a3 3 0 010-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-2.546-4.46a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
             </svg>
-            <span className="text-sm md:text-base font-bold tracking-wider text-white/60 uppercase">Precision Certified</span>
+            <span className="hidden sm:inline text-[10px] sm:text-xs md:text-sm font-bold tracking-wider text-white/60 uppercase">Precision Certified</span>
           </div>
 
           {isLoaded &&
@@ -295,7 +321,7 @@ export default function MouseScroll() {
                   <h2 className={headingClass.h2}>{s.heading}</h2>
                 )}
                 {s.sub && (
-                  <p className={`mt-${s.tag === "h1" ? "4" : "3"} ${s.tag === "h1" ? "text-xl md:text-2xl" : "text-lg"} text-white/50 max-w-sm`}>
+                  <p className={`mt-${s.tag === "h1" ? "3" : "2"} ${s.tag === "h1" ? "text-sm sm:text-lg md:text-xl lg:text-2xl" : "text-sm sm:text-base md:text-lg"} text-white/50 max-w-[250px] sm:max-w-sm`}>
                     {s.sub}
                   </p>
                 )}

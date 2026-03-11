@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { haptics } from "../utils/haptics";
 
 interface LoadingScreenProps {
   progress: number;
@@ -11,6 +13,14 @@ export default function LoadingScreen({
   progress,
   isComplete,
 }: LoadingScreenProps) {
+  const firedRef = useRef(false);
+
+  useEffect(() => {
+    if (isComplete && !firedRef.current) {
+      firedRef.current = true;
+      haptics.success();
+    }
+  }, [isComplete]);
   return (
     <AnimatePresence>
       {!isComplete && (
@@ -23,11 +33,10 @@ export default function LoadingScreen({
             <img
               src="/logo.png"
               alt="Handsteel"
-              className="h-16 md:h-24 w-auto"
+              className="h-10 sm:h-14 md:h-16 lg:h-24 w-auto"
             />
 
-            {/* Progress bar */}
-            <div className="w-48 h-px bg-white/10 relative overflow-hidden">
+            <div className="w-32 sm:w-48 h-px bg-white/10 relative overflow-hidden">
               <motion.div
                 className="absolute inset-y-0 left-0 bg-accent"
                 initial={{ width: "0%" }}
@@ -36,7 +45,7 @@ export default function LoadingScreen({
               />
             </div>
 
-            <p className="text-sm font-mono text-white/30">
+            <p className="text-xs sm:text-sm font-mono text-white/30">
               {progress}%
             </p>
           </div>

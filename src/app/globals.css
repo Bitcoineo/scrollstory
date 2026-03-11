@@ -193,6 +193,32 @@ body::-webkit-scrollbar {
   transition: transform 0.15s ease-out;
 }
 
+/* ========== MOBILE PERFORMANCE ========== */
+
+@media (max-width: 639px) {
+  .neon-text {
+    text-shadow:
+      0 0 7px rgba(var(--accent-rgb), 0.5),
+      0 0 14px rgba(var(--accent-rgb), 0.25);
+  }
+
+  .neon-border {
+    box-shadow:
+      0 0 5px rgba(var(--accent-rgb), 0.2),
+      inset 0 0 3px rgba(var(--accent-rgb), 0.03);
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+
+  @keyframes ring-pulse {
+    0% { transform: scale(1); opacity: 0.4; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+}
+
 /* ========== REDUCED MOTION ========== */
 
 @media (prefers-reduced-motion: reduce) {

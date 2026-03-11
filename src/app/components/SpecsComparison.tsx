@@ -55,18 +55,18 @@ export default function SpecsComparison() {
   const tableInView = useInView(tableRef, { once: true });
 
   return (
-    <section className="px-6 md:px-16 lg:px-24 py-10 md:py-14" aria-label="Specifications">
+    <section className="px-4 sm:px-6 md:px-16 lg:px-24 py-10 md:py-14" aria-label="Specifications">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         viewport={{ once: true, margin: "-100px" }}
-        className="text-center mb-10"
+        className="text-center mb-8 sm:mb-10"
       >
-        <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-white/90">
+        <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight text-white/90">
           The Numbers Speak.
         </h2>
-        <p className="mt-4 text-lg md:text-xl text-white/50 max-w-xl mx-auto">
+        <p className="mt-3 sm:mt-4 text-base sm:text-lg md:text-xl text-white/50 max-w-xl mx-auto">
           How Handsteel X compares to the competition.
         </p>
       </motion.div>
@@ -77,10 +77,10 @@ export default function SpecsComparison() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         viewport={{ once: true, margin: "-50px" }}
-        className="max-w-4xl mx-auto overflow-x-auto"
+        className="max-w-4xl mx-auto"
       >
-        <div className="min-w-[600px]">
-          {/* Header */}
+        {/* Desktop table — hidden on mobile */}
+        <div className="hidden md:block">
           <div className="grid grid-cols-4 gap-4 pb-4 mb-2">
             <div className="text-sm text-white/30 uppercase tracking-widest">
               Spec
@@ -121,6 +121,35 @@ export default function SpecsComparison() {
                 </div>
               </div>
               <div className="neon-line opacity-30" />
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Mobile stacked cards — visible below md */}
+        <div className="md:hidden space-y-0">
+          {specs.map((spec, i) => (
+            <motion.div
+              key={spec.label}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: "easeOut", delay: i * 0.05 }}
+              viewport={{ once: true }}
+              className="py-4 border-b border-white/5 last:border-b-0"
+            >
+              <p className="text-[10px] sm:text-xs uppercase tracking-widest text-white/30 mb-1">
+                {spec.label}
+              </p>
+              <p className="text-lg sm:text-xl font-bold text-white/90">
+                <CountUpValue value={spec.handsteel} animate={tableInView} />
+              </p>
+              <div className="flex gap-4 mt-1.5">
+                <span className="text-xs sm:text-sm text-white/30">
+                  vs {spec.compA}
+                </span>
+                <span className="text-xs sm:text-sm text-white/30">
+                  vs {spec.compB}
+                </span>
+              </div>
             </motion.div>
           ))}
         </div>
