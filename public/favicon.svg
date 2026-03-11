@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="6" fill="#080808"/>
+  <g transform="translate(7 3)" fill="none" stroke="#C0A080" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Mouse body -->
+    <path d="M1 10C1 5 4.5 1 9 1s8 4 8 9v8c0 4.5-3.5 8-8 8S1 22.5 1 18z" fill="#C0A080" fill-opacity="0.12"/>
+    <!-- Scroll wheel -->
+    <rect x="7.5" y="6" width="3" height="5" rx="1.5" fill="#C0A080" fill-opacity="0.4"/>
+    <!-- Center divider -->
+    <line x1="9" y1="13" x2="9" y2="18" stroke-opacity="0.4"/>
+    <!-- Left click -->
+    <path d="M1 10C1 5 4.5 1 9 1v12H1z" fill="none"/>
+    <!-- Right click -->
+    <path d="M17 10c0-5-3.5-9-8-9v12h8z" fill="none"/>
+  </g>
+</svg>

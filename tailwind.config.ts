@@ -11,6 +11,12 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
+      colors: {
+        accent: {
+          DEFAULT: "#C0A080",
+          hover: "#D4B896",
+        },
+      },
     },
   },
   plugins: [],

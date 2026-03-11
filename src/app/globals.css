@@ -2,12 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --accent-rgb: 192, 160, 128;
+}
+
 html {
   overscroll-behavior: none;
 }
 
 body {
-  background: #080808;
+  background: #050708;
   color: white;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -15,4 +19,210 @@ body {
 
 body::-webkit-scrollbar {
   display: none;
+}
+
+/* ========== NEON GLOW SYSTEM ========== */
+
+.neon-text {
+  text-shadow:
+    0 0 7px rgba(var(--accent-rgb), 0.6),
+    0 0 10px rgba(var(--accent-rgb), 0.4),
+    0 0 21px rgba(var(--accent-rgb), 0.3),
+    0 0 42px rgba(var(--accent-rgb), 0.2);
+}
+
+.neon-text-subtle {
+  text-shadow:
+    0 0 7px rgba(var(--accent-rgb), 0.3),
+    0 0 10px rgba(var(--accent-rgb), 0.2),
+    0 0 21px rgba(var(--accent-rgb), 0.15);
+}
+
+.neon-border {
+  box-shadow:
+    0 0 5px rgba(var(--accent-rgb), 0.3),
+    0 0 15px rgba(var(--accent-rgb), 0.15),
+    inset 0 0 5px rgba(var(--accent-rgb), 0.05);
+}
+
+.neon-border-intense {
+  box-shadow:
+    0 0 10px rgba(var(--accent-rgb), 0.5),
+    0 0 30px rgba(var(--accent-rgb), 0.25),
+    inset 0 0 10px rgba(var(--accent-rgb), 0.08);
+}
+
+.neon-line {
+  height: 1px;
+  background: rgba(var(--accent-rgb), 0.3);
+  box-shadow:
+    0 0 5px rgba(var(--accent-rgb), 0.4),
+    0 0 15px rgba(var(--accent-rgb), 0.2);
+}
+
+/* ========== KEYFRAMES ========== */
+
+@keyframes neon-flicker {
+  0%, 100% { opacity: 1; }
+  10% { opacity: 0.8; }
+  20% { opacity: 1; }
+  40% { opacity: 0.85; }
+  50% { opacity: 1; }
+  70% { opacity: 0.9; }
+}
+
+@keyframes neon-pulse {
+  0%, 100% {
+    text-shadow:
+      0 0 7px rgba(var(--accent-rgb), 0.6),
+      0 0 10px rgba(var(--accent-rgb), 0.4),
+      0 0 21px rgba(var(--accent-rgb), 0.3);
+  }
+  50% {
+    text-shadow:
+      0 0 10px rgba(var(--accent-rgb), 0.8),
+      0 0 20px rgba(var(--accent-rgb), 0.5),
+      0 0 40px rgba(var(--accent-rgb), 0.4);
+  }
+}
+
+@keyframes icon-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 3px rgba(var(--accent-rgb), 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.7));
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes ring-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+@keyframes drift {
+  0%, 100% {
+    transform: translate(0, 0);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translate(10px, -15px);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-5px, -25px);
+    opacity: 0.4;
+  }
+  75% {
+    transform: translate(15px, -10px);
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(calc(100vw + 100%)); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.15;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(1.05);
+  }
+}
+
+/* ========== ANIMATION UTILITIES ========== */
+
+.animate-neon-flicker {
+  animation: neon-flicker 3s ease-in-out infinite;
+}
+
+.animate-neon-pulse {
+  animation: neon-pulse 2s ease-in-out infinite;
+}
+
+.animate-icon-pulse {
+  animation: icon-pulse 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.animate-ring-pulse {
+  animation: ring-pulse 2.5s ease-out infinite;
+}
+
+.animate-drift {
+  animation: drift 4s ease-in-out infinite;
+}
+
+/* ========== FOCUS & ACCESSIBILITY ========== */
+
+*:focus-visible {
+  outline: 2px solid rgba(var(--accent-rgb), 1);
+  outline-offset: 2px;
+}
+
+/* ========== CURSOR TRAIL (desktop only) ========== */
+
+.cursor-dot {
+  transition: transform 0.15s ease-out;
+}
+
+/* ========== REDUCED MOTION ========== */
+
+@media (prefers-reduced-motion: reduce) {
+  .neon-text,
+  .neon-text-subtle {
+    text-shadow: none !important;
+  }
+
+  .neon-border,
+  .neon-border-intense {
+    box-shadow: none !important;
+  }
+
+  .animate-neon-flicker,
+  .animate-neon-pulse,
+  .animate-icon-pulse,
+  .animate-float,
+  .animate-pulse-glow,
+  .animate-ring-pulse,
+  .animate-drift,
+  .animate-shimmer {
+    animation: none !important;
+  }
+
+  /* Catch inline style={{ animation }} usage */
+  *[style*="animation"] {
+    animation: none !important;
+  }
+
+  .cursor-dot {
+    display: none !important;
+  }
 }

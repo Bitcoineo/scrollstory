@@ -28,15 +28,15 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section className="px-6 md:px-16 lg:px-24 py-32">
+    <section className="px-6 md:px-16 lg:px-24 py-10 md:py-14" aria-label="Reviews">
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         viewport={{ once: true, margin: "-100px" }}
-        className="text-center mb-20"
+        className="text-center mb-10"
       >
-        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter text-white/90">
+        <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-white/90">
           Trusted by Pros.
         </h2>
       </motion.div>
@@ -45,7 +45,7 @@ export default function Testimonials() {
         {testimonials.map((t, i) => (
           <motion.div
             key={t.name}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{
               duration: 0.6,
@@ -53,21 +53,34 @@ export default function Testimonials() {
               delay: i * 0.15,
             }}
             viewport={{ once: true, margin: "-50px" }}
-            className="relative rounded-2xl border border-white/5 bg-white/[0.02] p-8 flex flex-col justify-between"
           >
-            {/* Glassmorphism highlight */}
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.03] via-transparent to-transparent pointer-events-none" />
+            {/* Outer: Framer entry. Inner: CSS float */}
+            <div
+              className="group relative rounded-2xl border border-white/5 bg-white/[0.02] p-8 flex flex-col justify-between animate-float transition-all duration-300 hover:-translate-y-2 hover:border-accent/30"
+              style={{ animationDelay: `${i * 1}s` }}
+            >
+              {/* Glassmorphism highlight */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.03] via-transparent to-transparent pointer-events-none transition-all duration-300 group-hover:from-accent/[0.05]" />
 
-            <p className="text-base leading-relaxed text-white/70 mb-8 relative">
-              &ldquo;{t.quote}&rdquo;
-            </p>
+              {/* Hover neon glow */}
+              <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none neon-border" />
 
-            <div className="relative">
-              <p className="text-sm font-semibold text-white/90 tracking-wide">
-                {t.name}
+              {/* Quote mark */}
+              <span className="text-4xl text-accent/30 font-bold leading-none mb-2 relative transition-all duration-300 group-hover:text-accent/50 group-hover:neon-text-subtle">
+                &ldquo;
+              </span>
+
+              <p className="text-lg leading-relaxed text-white/50 mb-8 relative">
+                {t.quote}&rdquo;
               </p>
-              <p className="text-xs text-cyan-400/80 mt-1">{t.title}</p>
-              <p className="text-xs text-white/30 mt-0.5">{t.team}</p>
+
+              <div className="relative">
+                <p className="text-sm font-bold text-white/90 tracking-wide transition-all duration-300 group-hover:text-accent">
+                  {t.name}
+                </p>
+                <p className="text-sm text-accent mt-1">{t.title}</p>
+                <p className="text-sm text-white/30 mt-0.5">{t.team}</p>
+              </div>
             </div>
           </motion.div>
         ))}
