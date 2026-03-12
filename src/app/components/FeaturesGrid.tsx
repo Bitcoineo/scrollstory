@@ -51,7 +51,7 @@ const supportFeatures = [
   },
 ];
 
-const isTouchDevice = () =>
+const isTouchDevice =
   typeof window !== "undefined" &&
   ("ontouchstart" in window || navigator.maxTouchPoints > 0);
 
@@ -63,7 +63,7 @@ function HeroCard({
   index: number;
 }) {
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (isTouchDevice()) return;
+    if (isTouchDevice) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;

@@ -77,6 +77,11 @@ const headingClass: Record<"h1" | "h2", string> = {
   h2: "text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold tracking-tight text-white/90",
 };
 
+const subClass: Record<"h1" | "h2", string> = {
+  h1: "mt-3 text-sm sm:text-lg md:text-xl lg:text-2xl text-white/50 max-w-[250px] sm:max-w-sm",
+  h2: "mt-2 text-sm sm:text-base md:text-lg text-white/50 max-w-[250px] sm:max-w-sm",
+};
+
 export default function MouseScroll() {
   const [loadProgress, setLoadProgress] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -100,10 +105,13 @@ export default function MouseScroll() {
 
   const { scrollYProgress } = useScroll({ target: containerRef });
 
+  const HAPTIC_THRESHOLD_COUNT = 3 + scrollSections.length; // ticks + sections
+
   // Haptic feedback at scroll milestones
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     if (!isLoaded) return;
     const fired = firedThresholdsRef.current;
+    if (fired.size >= HAPTIC_THRESHOLD_COUNT) return;
 
     // Tick at 25/50/75%
     for (const t of [0.25, 0.5, 0.75]) {
@@ -118,7 +126,7 @@ export default function MouseScroll() {
       const key = s.enterAt + 100; // offset to avoid collision with tick thresholds
       if (latest >= s.enterAt && !fired.has(key)) {
         fired.add(key);
-        haptics.milestone();
+        haptics.success();
       }
     }
   });
@@ -151,15 +159,7 @@ export default function MouseScroll() {
     layout.width = targetWidth;
     layout.height = targetHeight;
 
-    const isMobile = window.innerWidth < 768;
-
-    if (isMobile) {
-      // Cover fit: fill viewport height, crop sides (mouse is centered)
-      layout.drawHeight = canvas.height;
-      layout.drawWidth = layout.drawHeight * imgAspect;
-      layout.offsetX = (canvas.width - layout.drawWidth) / 2;
-      layout.offsetY = 0;
-    } else if (canvasAspect > imgAspect) {
+    if (canvasAspect > imgAspect || window.innerWidth < 768) {
       layout.drawHeight = canvas.height;
       layout.drawWidth = layout.drawHeight * imgAspect;
       layout.offsetX = (canvas.width - layout.drawWidth) / 2;
@@ -329,7 +329,7 @@ export default function MouseScroll() {
                   <h2 className={headingClass.h2}>{s.heading}</h2>
                 )}
                 {s.sub && (
-                  <p className={`mt-${s.tag === "h1" ? "3" : "2"} ${s.tag === "h1" ? "text-sm sm:text-lg md:text-xl lg:text-2xl" : "text-sm sm:text-base md:text-lg"} text-white/50 max-w-[250px] sm:max-w-sm`}>
+                  <p className={subClass[s.tag]}>
                     {s.sub}
                   </p>
                 )}

@@ -13,6 +13,5 @@ export const haptics = {
   medium: () => getHaptics()?.trigger("medium"),
   heavy: () => getHaptics()?.trigger("heavy"),
   success: () => getHaptics()?.trigger("success"),
-  milestone: () => getHaptics()?.trigger("success"),
   tick: () => getHaptics()?.trigger("selection"),
 };
